@@ -1,0 +1,137 @@
+import javafx.util.Pair;
+ 
+import java.io.*;
+import java.util.*;
+ 
+/**
+ * Created by Sophy titova on 08.05.2016.
+ */
+public class task {
+    public static class stackK {
+        int v;
+        int u;
+        int uv;
+ 
+        stackK(int v, int u, int uv) {
+ 
+ 
+            this.u = u;
+            this.v = v;
+            this.uv = uv;
+        }
+    }
+ 
+    static final int N = 20200;
+    static ArrayList<Integer> ans;
+    static boolean was[];
+    static int tt, timeIn[], delta[];
+    static ArrayList<ArrayList<Pair<Integer, Integer>>> edges;
+    static ArrayList<ArrayList<Integer>> doPedges;
+    static ArrayList<stackK> stack;
+    static HashSet answer;
+    static int colors[];
+    static int number[];
+    static int maxColor = 0;
+ 
+    public static void main(String[] args) throws IOException {
+        stack = new ArrayList<>();
+        BufferedReader in = new BufferedReader(new FileReader("biconv.in"));
+        PrintWriter out = new PrintWriter(new File("biconv.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        edges = new ArrayList<>();
+        was = new boolean[N];
+        timeIn = new int[N];
+        delta = new int[N];
+        colors = new int[m];
+        number = new int[n];
+        answer = new HashSet(n);
+        ans = new ArrayList<>(0);
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<Pair<Integer, Integer>>(0));
+        }
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+ 
+            edges.get(u).add(new Pair(v, i));
+            edges.get(v).add(new Pair(u, i));
+ 
+        }
+        tt = 0;
+        doPedges = new ArrayList<ArrayList<Integer>>(n);
+        for (int i = 0; i < n; i++) {
+            doPedges.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n; ++i) {
+            was[i] = false;
+        }
+        dfs(0, -1);
+        Collections.sort(ans);
+        Arrays.fill(was, false);
+ 
+ 
+        int first = stack.get(0).v;
+        for (int i = 0; i < stack.size(); i++) {
+            if (stack.get(i).v == first) {
+                maxColor++;
+            }
+            colors[stack.get(i).uv] = maxColor;
+        }
+        out.println(maxColor);
+        for (int i = 0; i < m; i++) {
+            out.print(colors[i] + " ");
+        }
+        out.close();
+    }
+ 
+    public static void dfs(int v, int p) {
+        was[v] = true;
+ 
+        timeIn[v] = delta[v] = tt++;
+ 
+        int chil = 0;
+        for (int i = 0; i < edges.get(v).size(); i++) {
+            int next = edges.get(v).get(i).getKey();
+            int vu = edges.get(v).get(i).getValue();
+            int size = stack.size();
+            if (next == p)
+                continue;
+            if (colors[vu] == 0) {
+                stack.add(new stackK(v, next, vu));
+                colors[vu] = -1;
+            }
+            if (was[next]) {
+                delta[v] = Math.min(delta[v], timeIn[next]);
+            } else {
+                dfs(next, v);
+                delta[v] = Math.min(delta[v], delta[next]);
+                if (delta[next] >= timeIn[v] && p != -1) {
+                    maxColor++;
+                    while (stack.size() > size) {
+                        colors[stack.get(stack.size() - 1).uv] = maxColor;
+                        stack.remove(stack.size() - 1);
+                    }
+                    if (!answer.contains(v)) {
+                        answer.add(v);
+                        ans.add(v);
+ 
+                    }
+                }
+                ++chil;
+            }
+        }
+        if (p == -1 && chil > 1) {
+            if (!answer.contains(v)) {
+                answer.add(v);
+                ans.add(v);
+ 
+            }
+        }
+    }
+ 
+ 
+}

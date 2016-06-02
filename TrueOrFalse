@@ -1,0 +1,88 @@
+import java.io.*;
+import java.util.Random;
+import java.util.StringTokenizer;
+ 
+import static java.lang.System.exit;
+ 
+public class Cows {
+    static class Set {
+        int parent;
+        boolean reverse;
+        boolean ans;
+ 
+        Set(int parent, boolean reverse, boolean ans) {
+            this.parent = parent;
+            this.reverse = reverse;
+            this.ans = ans;
+        }
+    }
+ 
+    static boolean lastAnswer;
+    static Set varieties[];
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("truth.in"));
+        PrintWriter out = new PrintWriter(new File("truth.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        int result = m;
+        varieties = new Set[n];
+        for (int i = 0; i < n; i++) {
+            varieties[i] = new Set(i, false, true);
+        }
+        for (int i = 0; i < m; i++) {
+            st = new StringTokenizer(in.readLine());
+            int firstCow = Integer.parseInt(st.nextToken()) - 1;
+            int secondCow = Integer.parseInt(st.nextToken()) - 1;
+            boolean answer = st.nextToken().equals("T");
+            lastAnswer = varieties[firstCow].ans;
+            int leaderFirst = get(firstCow);
+            boolean ansFirst = lastAnswer;
+            lastAnswer = varieties[secondCow].ans;
+            int leaderSecond = get(secondCow);
+            boolean ansSecond = lastAnswer;
+            boolean compareLeader = (leaderFirst == leaderSecond);
+            if ((ansFirst && ansSecond != answer) ||
+                    (!ansFirst && ansSecond == answer)) {
+                varieties[leaderSecond].reverse = !varieties[leaderSecond].reverse;
+                if (compareLeader) {
+                    result = i;
+                    break;
+                }
+            }
+            if (!compareLeader) {
+                union(leaderFirst, leaderSecond);
+            }
+        }
+        out.print(result);
+        out.close();
+    }
+ 
+ 
+    public static int get(int value) {
+        if (varieties[value].reverse) {
+            lastAnswer = !lastAnswer;
+        }
+        if (varieties[value].parent == value) {
+            return value;
+        }
+        return get(varieties[value].parent);
+    }
+ 
+    public static void union(int first, int second) {
+        Random rd = new Random(Integer.MAX_VALUE);
+        int a = rd.nextInt();
+        int f = first;
+        int s = second;
+        if ((a % 2) == 1 || (a % 2) == -1) {
+            f = second;
+            s = first;
+        }
+        if (varieties[s].reverse) {
+            varieties[f].reverse = !varieties[f].reverse;
+        }
+        varieties[f].parent = s;
+ 
+    }
+}

@@ -1,0 +1,74 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+ 
+/**
+ * Created by Sophy titova on 07.05.2016.
+ */
+public class taskA {
+    static ArrayList<Integer> sortMas = new ArrayList<>();
+ 
+    static ArrayList<Integer> edges[];
+    static ArrayList<Integer> dopMass[];
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("topsort.in"));
+        PrintWriter out = new PrintWriter(new File("topsort.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        int colour[] = new int[n];
+        boolean cycle;
+        dopMass = new ArrayList[n];
+ 
+        for (int i = 0; i < n; i++) {
+            dopMass[i] = new ArrayList<>(0);
+        }
+        edges = new ArrayList[n];
+        for (int i = 0; i < n; i++) {
+            edges[i] = new ArrayList<Integer>();
+        }
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+            edges[u].add(v);
+        }
+ 
+ 
+        for (int i = 0; i < n; i++) {
+            cycle = visitDfs(i, colour);
+            if (cycle) {
+                out.print(-1);
+                out.close();
+                return;
+            }
+        }
+ 
+        for (int i = sortMas.size() - 1; i >= 0; i--) {
+            out.print((sortMas.get(i) + 1) + " ");
+ 
+        }
+        out.close();
+ 
+ 
+    }
+ 
+    public static boolean visitDfs(Integer i, int colour[]) {
+        if (colour[i] == 2) {
+            return false;
+        } else if (colour[i] == 1) {
+            return true;
+        }
+        colour[i] = 1;
+        for (int k = 0; k < edges[i].size(); k++) {
+            if (visitDfs((Integer) edges[i].get(k), colour) == true) {
+                return true;
+            }
+        }
+        colour[i] = 2;
+        sortMas.add(i);
+        return false;
+    }

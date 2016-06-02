@@ -1,0 +1,97 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+ 
+/**
+ * Created by Sophy titova on 08.05.2016.
+ */
+public class task5 {
+    static boolean was[];
+    static int number[];
+    static ArrayList<ArrayList<Integer>> edges;
+    static ArrayList<ArrayList<Integer>> gRedges;
+    static ArrayList<ArrayList<Integer>> dopMass;
+    static ArrayList<Integer> order;
+    static ArrayList<Integer> components;
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("cond.in"));
+        PrintWriter out = new PrintWriter(new File("cond.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        was = new boolean[n];
+        number = new int[n];
+        edges = new ArrayList<>();
+        gRedges = new ArrayList<>();
+        dopMass = new ArrayList<>();
+        order = new ArrayList<>();
+        components = new ArrayList<>();
+        number = new int[n];
+        dopMass = new ArrayList<>();
+ 
+        for (int i = 0; i < n; i++) {
+            dopMass.add(new ArrayList<>(0));
+        }
+ 
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<>(0));
+            gRedges.add(new ArrayList<>(0));
+ 
+        }
+ 
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+            edges.get(u).add(v);
+            gRedges.get(v).add(u);
+            dopMass.get(u).add(i);
+        }
+        for (int i = 0; i < n; i++) {
+            was[i] = false;
+        }
+ 
+        for (int i = 0; i < n; ++i)
+            if (!was[i])
+                orderDfs(i);
+        for (int i = 0; i < n; i++) {
+            was[i] = false;
+        }
+        int count = 1;
+        for (int i = 0; i < n; ++i) {
+            int v = order.get(n - 1 - i);
+            if (!was[v]) {
+                dfs(v, count);
+                count++;
+            }
+        }
+        out.println(count - 1);
+        for (int i = 0; i < n; i++) {
+            out.print(number[i] + " ");
+        }
+        out.close();
+ 
+    }
+ 
+    public static void orderDfs(int v) {
+        was[v] = true;
+        for (int i = 0; i < edges.get(v).size(); i++) ///////+++
+            if (!was[edges.get(v).get(i)])
+                orderDfs(edges.get(v).get(i));
+        order.add(v);
+    }
+ 
+    public static void dfs(int v, int count) {
+        was[v] = true;
+        components.add(v);
+        number[v] = count;
+        System.out.println(number[v]);
+        for (int i = 0; i < gRedges.get(v).size(); i++)
+            if (!was[gRedges.get(v).get(i)])
+                dfs(gRedges.get(v).get(i), count);
+    }
+ 
+ 
+}

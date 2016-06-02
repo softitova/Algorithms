@@ -1,0 +1,72 @@
+import java.io.*;
+import java.util.*;
+ 
+/**
+ * Created by Sophy titova on 07.05.2016.
+ */
+public class task2 {
+    static ArrayList<ArrayList<Integer>> edges;
+    static ArrayList<Integer> resultMass;
+    static int n;
+    static int was[];
+ 
+ 
+    public static void main(String[] args) throws IOException {
+ 
+        BufferedReader in = new BufferedReader(new FileReader("hamiltonian.in"));
+        PrintWriter out = new PrintWriter(new File("hamiltonian.out"));
+        String str = in.readLine();
+        StringTokenizer st = new StringTokenizer(str);
+        n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        resultMass = new ArrayList<>(0);
+        edges = new ArrayList<>();
+        was = new int[n];
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<>(0));
+        }
+        List[] dop = new List[n];
+ 
+        
+ 
+ 
+        for (int i = 0; i < m; i++) {
+            String strr = in.readLine();
+            StringTokenizer strrrr = new StringTokenizer(strr);
+            int u = Integer.parseInt(strrrr.nextToken())-1;
+            int v = Integer.parseInt(strrrr.nextToken())-1;
+ 
+ 
+            edges.get(u).add(v);
+ 
+        }
+ 
+ 
+        for (int i = 0; i < n; ++i) {
+            dfs(i);
+        }
+        for (int i = 0; i < resultMass.size() - 1; i++) {
+            if (!edges.get(resultMass.get(i + 1)).contains(resultMass.get(i))) {
+                out.print("NO");
+                out.close();
+                return;
+            }
+        }
+        out.print("YES");
+        out.close();
+ 
+ 
+    }
+ 
+    public static void dfs(int v) {
+        if (was[v] == 1) return;
+        was[v] = 1;
+ 
+        for (int i = 0; i < edges.get(v).size(); i++) {
+            dfs((int) edges.get(v).get(i));
+        }
+        resultMass.add(v);
+ 
+    }
+ 
+}

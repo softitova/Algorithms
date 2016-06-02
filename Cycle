@@ -1,0 +1,100 @@
+import java.io.*;
+import java.util.*;
+ 
+/**
+ * Created by Sophy titova on 07.05.2016.
+ */
+public class task2 {
+    static ArrayList<ArrayList> edges;
+    static int n;
+    static ArrayList<ArrayList<Integer>> g;
+    static ArrayList<Integer> colour;
+    static ArrayList<Integer> arr;
+    static int left, right;
+ 
+ 
+    public static void main(String[] args) throws IOException {
+ 
+        BufferedReader in = new BufferedReader(new FileReader("cycle.in"));
+        PrintWriter out = new PrintWriter(new File("cycle.out"));
+        String str = in.readLine();
+        StringTokenizer st = new StringTokenizer(str);
+        n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        arr = new ArrayList<>();
+        colour = new ArrayList<>();
+        edges = new ArrayList<>(n);
+        int cicleMass[] = new int[n];
+ 
+        for (int i = 0; i < n; i++) {
+            arr.add(-1);
+            colour.add(0);
+        }
+        left = -1;
+ 
+        g = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<Integer>());
+        }
+        for (int i = 0; i < n; i++) {
+            g.add(new ArrayList<Integer>());
+        }
+        for (int i = 0; i < m; i++) {
+            String strr = in.readLine();
+            StringTokenizer strrrr = new StringTokenizer(strr);
+            int u = Integer.parseInt(strrrr.nextToken()) - 1;
+            int v = Integer.parseInt(strrrr.nextToken()) - 1;
+            edges.get(u).add(v);
+        }
+ 
+ 
+        for (int i = 0; i < n; ++i) {
+ 
+            if (dfs(i) == true) {
+                break;
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            cicleMass[i] = colour.get(i);
+            System.out.println(colour.get(i));
+ 
+        }
+ 
+        if (left == -1)
+            out.print("NO");
+        else {
+            out.println("YES");
+            ArrayList<Integer> cycle = new ArrayList<>();
+            cycle.add(left);
+            for (int v = right; v != left; v = arr.get(v))
+                cycle.add(v);
+            cycle.add(left);
+            Collections.reverse(cycle);
+            for (int i = 1; i < cycle.size(); i++)
+                out.print((cycle.get(i) + 1) + " ");
+        }
+        out.close();
+    }
+ 
+ 
+    static boolean dfs(int v) {
+        colour.set(v, 1);
+        for (int i = 0; i < edges.get(v).size(); ++i) {
+            Object to = edges.get(v).get(i);
+            if (colour.get((int) to) == 0) {
+                arr.set((int) to, v);
+                if (dfs((int) to)) {
+                    return true;
+                }
+            } else if (colour.get((int) to) == 1) {
+                right = v;
+                left = (int) to;
+                return true;
+            }
+        }
+        colour.set(v, 2);
+        return false;
+    }
+ 
+ 
+}

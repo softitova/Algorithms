@@ -1,0 +1,88 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
+ 
+public class task3 {
+ 
+ 
+    static boolean visited[][];
+    static int n, k, index = 0;
+ 
+ 
+    static int newEdge[][];
+    static int RevnewEdge[][];
+   // static Object val[];
+    static ArrayList<Integer> w;
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("avia.in"));
+        PrintWriter out = new PrintWriter(new File("avia.out"));
+        n = Integer.parseInt((new StringTokenizer(in.readLine())).nextToken());
+ 
+ 
+        newEdge = new int[n][n];
+        RevnewEdge = new int[n][n];
+ 
+ 
+        w = new ArrayList<>();
+        //TreeSet<Integer> s = new TreeSet<>();
+        visited = new boolean[1010][1010];
+        for (int i = 0; i < n; i++) {
+            StringTokenizer st = new StringTokenizer(in.readLine());
+            for (int j = 0; j < n; j++) {
+                int d = Integer.parseInt(st.nextToken());
+                newEdge[i][j] = d;
+                RevnewEdge[j][i] = d;
+                w.add(d);
+                //s.add(d);
+            }
+        }
+        Collections.sort(w);
+        // val = s.toArray();
+        int l = binSearh();
+        //out.print(val[l]);
+        out.print(w.get(l));
+        out.close();
+    }
+ 
+    public static int binSearh() {
+        int l = -1;
+          //int r = val.length;
+          int r = w.size();
+        while (l < r - 1) {
+            int m = (l + r) >> 1;
+            if (!comp(w.get(m))) {
+                //if (!comp(val[m])) {
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        return r;
+    }
+ 
+    public static boolean comp(Object value) {
+        k = 0;
+        Dfs(0, value, index++, newEdge);
+        if (k < n) {
+            return false;
+        }
+        k = 0;
+        Dfs(0, value, index++, RevnewEdge);
+        if (k < n) {
+            return false;
+        }
+        return true;
+    }
+ 
+ 
+    public static void Dfs(int v, Object value, int index, int Edge[][]) {
+        visited[index][v] = true;
+        ++k;
+        for (int i = 0; i < n; i++)
+            if (!visited[index][i] && Edge[v][i] <= (int) value)
+                Dfs(i, value, index, Edge);
+    }
+}

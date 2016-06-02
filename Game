@@ -1,0 +1,81 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+ 
+/**
+ * Created by Sophy titova on 07.05.2016.
+ */
+public class task2 {
+    static List edges[];
+    static List dop[];
+ 
+ 
+    static int[] was;
+    static int[] wasWay;
+ 
+    public static void main(String[] args) throws IOException {
+ 
+        BufferedReader in = new BufferedReader(new FileReader("game.in"));
+        PrintWriter out = new PrintWriter(new File("game.out"));
+        String str = in.readLine();
+        StringTokenizer st = new StringTokenizer(str);
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        int s = Integer.parseInt(st.nextToken()) - 1;
+        edges = new ArrayList[n];
+ 
+        int []wasWay = new int[n];
+        int []was = new int[n];
+ 
+ 
+        for (int i = 0; i < n; i++) {
+            edges[i] = new ArrayList<Integer>();
+            was[i]= wasWay[i]=-1;
+        }
+        for (int i = 0; i < m; i++) {
+            String strr = in.readLine();
+            StringTokenizer strrrr = new StringTokenizer(strr);
+            int u = Integer.parseInt(strrrr.nextToken()) - 1;
+            int v = Integer.parseInt(strrrr.nextToken()) - 1;
+            edges[u].add(v);
+        }
+        if (game(s, 0, was, wasWay) == 1) {
+            out.print("First player wins");
+        } else {
+            out.print("Second player wins");
+        }
+        out.close();
+ 
+    }
+    static int game(int prev, int next, int was[], int wasWay[]) {
+        if (was[prev] != -1) {
+            if (next % 2 == was[prev]) {
+                return wasWay[prev];
+            } else {
+                return (wasWay[prev] + 1) % 2;
+            }
+        }
+ 
+        was[prev] = next % 2;
+        if (edges[prev].isEmpty()) {
+            wasWay[prev] = next % 2;
+        } else {
+            int step = -1;
+            for (Object c : edges[prev]) {
+                if (step == -1) {
+                    step = game((int) c, next + 1, was, wasWay);
+                } else if (step != game((int) c, next + 1, was,wasWay)) {
+                    wasWay[prev] = (next + 1) % 2;
+                    return wasWay[prev];
+                }
+            }
+            wasWay[prev] = step;
+        }
+        return wasWay[prev];
+    }
+ 
+ 
+ 
+ 
+}

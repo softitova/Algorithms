@@ -1,0 +1,98 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+ 
+/**
+ * Created by Sophy titova on 08.05.2016.
+ */
+public class task5 {
+    static final int N = 20200;
+    static ArrayList<Integer> ans;
+    static boolean was[];
+    static int tt, timeIn[], delta[];
+    static ArrayList<ArrayList<Integer>> edges;
+    static ArrayList<ArrayList<Integer>> doPedges;
+ 
+static HashSet answer ;
+    public static void main(String[] args) throws IOException {
+ 
+        BufferedReader in = new BufferedReader(new FileReader("points.in"));
+        PrintWriter out = new PrintWriter(new File("points.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        edges = new ArrayList<>();
+        was = new boolean[N];
+        timeIn = new int[N];
+        delta = new int[N];
+        answer = new HashSet(n);
+        ans = new ArrayList<>(0);
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<Integer>(0));
+        }
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+ 
+            edges.get(u).add(v);
+            edges.get(v).add(u);
+ 
+        }
+        tt = 0;
+        doPedges = new ArrayList<ArrayList<Integer>>(n);
+        for (int i = 0; i < n; i++) {
+            doPedges.add(new ArrayList<>());
+        }
+        for (int i = 0; i < n; ++i) {
+            was[i] = false;
+        }
+        dfs(0, -1);
+        Collections.sort(ans);
+ 
+        out.println(ans.size());
+        for (int i = 0; i < ans.size(); i++) {
+            out.println(ans.get(i) + 1);
+        }
+        out.close();
+    }
+ 
+    public static void dfs(int v, int p) {
+        was[v] = true;
+ 
+        timeIn[v] = delta[v] = tt++;
+ 
+        int chil = 0;
+        for (int i = 0; i < edges.get(v).size(); i++) {
+            int next = edges.get(v).get(i);
+            if (next == p)
+                continue;
+ 
+            if (was[next]) {
+                delta[v] = Math.min(delta[v], timeIn[next]);
+            } else {
+                dfs(next, v);
+                delta[v] = Math.min(delta[v], delta[next]);
+                if (delta[next] >= timeIn[v] && p != -1) {
+                    System.out.println(delta[next] + " " + timeIn[v]);
+                    if(!answer.contains(v)) {
+                        answer.add(v);
+                        ans.add(v);
+ 
+                    }
+                }
+                ++chil;
+            }
+        }
+        if (p == -1 && chil > 1) {
+            if(!answer.contains(v)) {
+                answer.add(v);
+                ans.add(v);
+ 
+            }
+        }
+    }
+}

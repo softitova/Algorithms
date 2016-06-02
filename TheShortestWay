@@ -1,0 +1,124 @@
+import java.io.*;
+import java.util.*;
+ 
+/**
+ * Created by Sophy titova on 08.05.2016.
+ */
+public class task5 {
+ 
+ 
+    static class Edge implements Comparable<Edge> {
+        int from;
+        int next;
+        int w;
+ 
+        Edge(int from, int next, int w) {
+            this.from = from;
+            this.next = next;
+            this.w = w;
+        }
+ 
+        @Override
+        public int compareTo(Edge edge) {
+            return Integer.compare(this.w, edge.w);
+        }
+    }
+ 
+ 
+    static boolean was[];
+ 
+    static ArrayList<ArrayList<Integer>> edges1;
+    static ArrayList<ArrayList<Integer>> dopMass;
+    static long graph[][];
+    static ArrayList<Integer> dop;
+    static int[] inCoun;
+    static long[] shW;
+    static Edge[] strucEdge;
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("shortpath.in"));
+        PrintWriter out = new PrintWriter(new File("shortpath.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        int s = Integer.parseInt(st.nextToken()) - 1;
+        int t = Integer.parseInt(st.nextToken()) - 1;
+        was = new boolean[n];
+        strucEdge = new Edge[m];
+        inCoun = new int[n];
+        dop = new ArrayList<Integer>(n);
+        final long INF = Long.MAX_VALUE;
+        shW = new long[n];
+        shW[s] = 0;
+        edges1 = new ArrayList<>(n);
+ 
+        for (int i = 0; i < n; i++) {
+            edges1.add(new ArrayList<>(0));
+        }
+ 
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+            int w = Integer.parseInt(str.nextToken());
+            edges1.get(u).add(i);
+            //System.out.println(i);
+            strucEdge[i] = new Edge(u, v, w);
+        }
+        dfs(s);
+        if (!dop.contains(t)) {
+            out.print("Unreachable");
+            out.close();
+            return;
+        }
+        int[] number = new int[n];
+ 
+        inCoun[s] = 0;
+        for (int i = 0; i < n; i++) {
+            was[i] = false;
+            shW[i] = Long.MAX_VALUE;
+        }
+        dopMass = new ArrayList<>();
+        shW[s] = 0;
+ 
+ 
+ 
+ 
+        while (!was[t]) {
+            for (int i = dop.size() - 1; i >= 0; i--) {
+                shortestWay(dop.get(i));
+                System.out.println(i);
+            }
+        }
+//
+        out.println(shW[t]);
+ 
+        out.close();
+    }
+ 
+    private static void shortestWay(int v) {
+        if (was[v] || inCoun[v] != 0) return;
+        was[v] = true;
+        for (int i = 0; i < edges1.get(v).size(); i++) {
+            int ij = strucEdge[edges1.get(v).get(i)].next;
+            if (shW[ij] > shW[v] + strucEdge[edges1.get(v).get(i)].w) {
+                shW[ij] = shW[v] + strucEdge[edges1.get(v).get(i)].w;
+            }
+            inCoun[ij]--;
+        }
+    }
+ 
+    private static void dfs(int v) {
+        inCoun[v]++;
+        if (was[v]) return;
+ 
+        was[v] = true;
+        for (int i = 0; i < edges1.get(v).size(); i++) {
+            int outEdge = edges1.get(v).get(i);
+            dfs(strucEdge[outEdge].next);
+        }
+        dop.add(v);
+    }
+ 
+}

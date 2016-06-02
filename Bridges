@@ -1,0 +1,113 @@
+import java.io.*;
+import java.util.*;
+ 
+/**
+ * Created by Sophy titova on 08.05.2016.
+ */
+public class task {
+    public static class Pair {
+        public int second;
+        public int count;
+ 
+        public Pair(int a, int b) {
+            this.second = a;
+            this.count = b;
+        }
+ 
+        public int getCount() {
+            return this.count;
+        }
+ 
+        public int getSecond() {
+            return this.second;
+        }
+ 
+    }
+ 
+    static boolean was[];
+    static int number[];
+    static ArrayList<ArrayList<Pair>> edges;
+    static ArrayList<ArrayList<Pair>> doPedges;
+    static ArrayList<Integer> answer;
+    static int N = 200020;
+    static int timer;
+    static int timeIn[];
+    static int deltaMin[];
+    static int ans[];
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("bridges.in"));
+        PrintWriter out = new PrintWriter(new File("bridges.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+        int n = Integer.parseInt(st.nextToken());
+        int m = Integer.parseInt(st.nextToken());
+        was = new boolean[n];
+        timeIn = new int[N];
+        deltaMin = new int[N];
+        ans = new int[m];
+        edges = new ArrayList<ArrayList<Pair>>(n);
+        doPedges = new ArrayList<ArrayList<Pair>>(n);
+        answer = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            edges.add(new ArrayList<Pair>(0));
+        }for (int i = 0; i < n; i++) {
+            doPedges.add(new ArrayList<Pair>(0));
+        }
+ 
+ 
+        for (int i = 0; i < m; i++) {
+            StringTokenizer str = new StringTokenizer(in.readLine());
+            int u = Integer.parseInt(str.nextToken()) - 1;
+            int v = Integer.parseInt(str.nextToken()) - 1;
+ 
+            edges.get(u).add(new Pair(v, i + 1));
+            edges.get(v).add(new Pair(u, i + 1));
+ 
+        }
+        timer = 0;
+        for (int i = 0; i < n; ++i) {
+            was[i] = false;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (!was[i]) {
+                dfs(i, -1);
+            }
+        }
+        Collections.sort(answer);
+ 
+ 
+        out.println(answer.size());
+        for (int i = 0; i < answer.size(); i++) {
+            out.print(answer.get(i) + " ");
+        }
+        out.close();
+ 
+ 
+    }
+ 
+    public static void dfs(int v, int p) {
+        was[v] = true;
+        timeIn[v] = deltaMin[v] = timer++;
+        for (int i = 0; i < edges.get(v).size(); i++) {
+            int to = edges.get(v).get(i).second;
+            if (to == p) continue;
+            if (was[to])
+                deltaMin[v] = Math.min(deltaMin[v], timeIn[to]);
+            else {
+                dfs(to, v);
+                deltaMin[v] = Math.min(deltaMin[v], deltaMin[to]);
+                if (deltaMin[to] > timeIn[v]) {
+                    for (int j = 0; j < edges.get(to).size(); j++) {
+ 
+                        if (edges.get(to).get(j).getSecond() == v)
+                            answer.add(edges.get(to).get(j).getCount());
+ 
+                    }
+                    System.out.println(to + " " + v);
+                }
+ 
+            }
+        }
+    }
+ 
+}

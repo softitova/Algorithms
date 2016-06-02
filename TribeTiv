@@ -1,0 +1,92 @@
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.StringTokenizer;
+ 
+public class task {
+    static ArrayList<Integer> sortMas = new ArrayList<>();
+    static ArrayList<Integer> edges[];
+    static ArrayList<Integer> edgesRev[];
+    static HashMap symb = new HashMap();
+    static ArrayList<Integer> dopMass[];
+ 
+    public static void main(String[] args) throws IOException {
+        BufferedReader in = new BufferedReader(new FileReader("tiv.in"));
+        PrintWriter out = new PrintWriter(new File("tiv.out"));
+        StringTokenizer st = new StringTokenizer(in.readLine());
+ 
+        int n = Integer.parseInt(st.nextToken());
+        int first[] = new int[n];
+        int lenght[] = new int[n];
+        for (int i = 0; i < 26; i++)
+            symb.put("" + (char) (i + 97), i);
+        edges = new ArrayList[26];
+        for (int i = 0; i < 26; i++) {
+            edges[i] = new ArrayList<Integer>();
+        }
+        edgesRev = new ArrayList[26];
+        for (int i = 0; i < 26; i++) {
+            edgesRev[i] = new ArrayList<Integer>();
+        }
+ 
+        String s1 = (new StringTokenizer(in.readLine())).nextToken();
+        HashSet ved = new HashSet();
+        for (int i = 0; i < n - 1; i++) {
+            first[i] = (int) s1.charAt(0) - 97;
+            if (s1.length() != 1) {
+                ved.add((int) s1.charAt(0) - 97);
+            }
+            lenght[i] = s1.length();
+            String s2 = (new StringTokenizer(in.readLine())).nextToken();
+            if (s1.equals(s2) || s1.length() > s2.length()) {
+                out.print("NO");
+                out.close();
+                return;
+            }
+            if (s1.length() == s2.length()) {
+                int ii = 0;
+                while (ii < s1.length() && s1.charAt(ii) == s2.charAt(ii)) {
+                    ii++;
+                }
+                if (ii < s1.length()) {
+                    edgesRev[(int) symb.get("" + s2.charAt(ii))].add((int) symb.get("" + s1.charAt(ii)));
+                }
+            }
+            s1 = s2;
+        }
+ 
+        int ans[] = new int[26];
+        for (int l = 0; l < 26; l++) {
+            boolean flag = false;
+            for (int i = 0; i < 26; i++) {
+                if (edgesRev[i].size() == 0 && (l != 0 || !ved.contains(i))) {
+                    ans[i] = l;
+                    flag = true;
+                    for (int k = 0; k < 26; k++) {
+                        for (int h = 0; h < edgesRev[k].size(); h++) {
+                            if (edgesRev[k].get(h) == i) {
+                                edgesRev[k].remove(h);
+                                h--;
+                            }
+                        }
+                    }
+                    edgesRev[i].add(1100000000);
+                    break;
+                }
+            }
+            if (flag == false) {
+                out.print("NO");
+                out.close();
+                return;
+            }
+        }
+ 
+        out.println("YES");
+        for (int i = 0; i < 26; i++) {
+            out.print(ans[i] + " ");
+        }
+        out.close();
+    }
+ 
+}
